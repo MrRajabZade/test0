@@ -11,6 +11,7 @@ class handler(BaseHTTPRequestHandler):
             
             json_data = post_data.get('json', [''])[0]
             input_key = post_data.get('key', [''])[0]
+            auto_save = post_data.get('auto_save', ['off'])[0].lower() == 'on'
 
             if not json_data or not input_key:
                 raise ValueError("Missing parameters")
@@ -23,10 +24,38 @@ class handler(BaseHTTPRequestHandler):
 
             is_valid = hmac.compare_digest(generated_key, input_key)
 
+            # ذخیره خودکار اگر فعال باشد
+            save_status = False
+            if is_valid and auto_save:
+                try:
+                    user_data = data.get('user', {})
+                    response = supabase.table('telegram_auth').insert({
+                        "auth_data": data.get('auth_data'),
+                        "chat_instance": data.get('chat_instance'),
+                        "chat_type": data.get('chat_type'),
+                        "device_id": data.get('device_id'),
+                        "query_id": data.get('query_id'),
+                        "platform": data.get('platform'),
+                        "hash": data.get('hash'),
+                        "user_id": user_data.get('id'),
+                        "first_name": user_data.get('first_name'),
+                        "last_name": user_data.get('last_name'),  # اضافه شد
+                        "language_code": user_data.get('language_code'),
+                        "allows_write_to_pm": user_data.get('allows_write_to_pm', False),
+                        "start_param": data.get('start_param')  # اضافه شد
+                    }).execute()
+                    save_status = True
+                except Exception as db_error:
+                    print("Database Error:", str(db_error))
+
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
-            self.wfile.write(json.dumps({"valid": is_valid}).encode())
+            self.wfile.write(json.dumps({
+                "valid": is_valid,
+                "saved": save_status,
+                "hash": data.get('hash') if is_valid else None
+            }).encode())
 
         except Exception as e:
             self.send_response(400)
