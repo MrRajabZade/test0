@@ -54,7 +54,6 @@ class handler(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps({
                 "valid": is_valid,
                 "saved": save_status,
-                "hash": data.get('hash') if is_valid else None
             }).encode())
 
         except Exception as e:
