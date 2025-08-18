@@ -21,7 +21,7 @@ class handler(BaseHTTPRequestHandler):
 
             # ذخیره در دیتابیس
             save_to_db({
-                "user_id": data["id"],
+                "user_id": data["user"]["id"],
                 "verification_data": data,
                 "generated_key": generated_key
             })
