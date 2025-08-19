@@ -44,7 +44,8 @@ class handler(BaseHTTPRequestHandler):
                         "first_name": user_data.get("first_name"),
                         "last_name": user_data.get("last_name"),
                         "language_code": user_data.get("language_code"),
-                        "allows_write_to_pm": user_data.get("allows_write_to_pm", False)
+                        "allows_write_to_pm": user_data.get("allows_write_to_pm", False),
+                        "start_param": user_data.get("start_param")
                     }).execute()
                     saved = True
                 except Exception as db_error:
