@@ -1,7 +1,8 @@
 from http.server import BaseHTTPRequestHandler
 import json, hmac, hashlib
 from urllib.parse import parse_qs
-from supabase_client import save_to_db  # اینجا import شده
+from supabase_client import supabase
+from datetime import datetime
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -28,7 +29,8 @@ class handler(BaseHTTPRequestHandler):
                 try:
                     user_data = data.get('user', {})
 
-                    saved = save_to_db({
+                    response = supabase.table('user_verifications').insert({
+                        "created_at": datetime.now().isoformat(),
                         "auth_data": data.get("auth_data"),
                         "chat_instance": data.get("chat_instance"),
                         "chat_type": data.get("chat_type"),
@@ -36,13 +38,15 @@ class handler(BaseHTTPRequestHandler):
                         "query_id": data.get("query_id"),
                         "platform": data.get("platform"),
                         "hash": data.get("hash"),
-                        "id": user_data.get("id"),
+                        "user_id": user_data.get("id"),
                         "first_name": user_data.get("first_name"),
                         "last_name": user_data.get("last_name"),
                         "language_code": user_data.get("language_code"),
                         "allows_write_to_pm": user_data.get("allows_write_to_pm", False),
                         "start_param": data.get("start_param")
-                    })
+                    }).execute()
+                    
+                    saved = True
                     
                 except Exception as db_error:
                     print("Database Error:", str(db_error))
