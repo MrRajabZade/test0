@@ -8,8 +8,7 @@ ALLOWED_ORIGIN = "https://eitaabin.rozblog.com"
 
 class handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
-        origin = self.headers.get('Origin', '')
-        if origin == ALLOWED_ORIGIN:
+        if self.headers.get('Origin') == ALLOWED_ORIGIN:
             self.send_response(200)
             self.send_header('Access-Control-Allow-Origin', ALLOWED_ORIGIN)
             self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
@@ -26,7 +25,7 @@ class handler(BaseHTTPRequestHandler):
                 self.send_response(403)
                 self.send_header('Content-type', 'application/json')
                 self.end_headers()
-                self.wfile.write(json.dumps({"error": "Access denied. Only eitaabin.rozblog.com is allowed"}).encode())
+                self.wfile.write(json.dumps({"error": "Access denied"}).encode())
                 return
                 
             content_length = int(self.headers['Content-Length'])
