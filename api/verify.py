@@ -23,15 +23,11 @@ class handler(BaseHTTPRequestHandler):
             generated_key = hmac.new(secret.encode(), sorted_json.encode(), hashlib.sha256).hexdigest()
 
             is_valid = hmac.compare_digest(generated_key, input_key)
-
-            # ذخیره خودکار اگر auto_save فعال باشد
             saved = False
             if is_valid and auto_save == 'on':
                 try:
-                    # استخراج داده‌های کاربر از JSON
                     user_data = data.get('user', {})
-                    
-                    # استفاده از تابع save_to_db همانطور که خواستید
+
                     saved = save_to_db({
                         "auth_data": data.get("auth_data"),
                         "chat_instance": data.get("chat_instance"),
@@ -45,7 +41,7 @@ class handler(BaseHTTPRequestHandler):
                         "last_name": user_data.get("last_name"),
                         "language_code": user_data.get("language_code"),
                         "allows_write_to_pm": user_data.get("allows_write_to_pm", False),
-                        "generated_key": generated_key  # اضافه کردن کلید تولید شده
+                        "start_param": data.get("start_param")
                     })
                     
                 except Exception as db_error:
