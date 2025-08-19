@@ -40,7 +40,7 @@ class handler(BaseHTTPRequestHandler):
                         "query_id": data.get("query_id"),
                         "platform": data.get("platform"),
                         "hash": data.get("hash"),
-                        "user_id": user_data.get("id"),
+                        "id": user_data.get("id"),
                         "first_name": user_data.get("first_name"),
                         "last_name": user_data.get("last_name"),
                         "language_code": user_data.get("language_code"),
