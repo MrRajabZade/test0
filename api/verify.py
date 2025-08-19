@@ -32,7 +32,7 @@ class handler(BaseHTTPRequestHandler):
                     user_data = data.get('user', {})
                     
                     # ذخیره در دیتابیس با ساختار جدید
-                    supabase.table('telegram_auth').insert({
+                    supabase.table('user_verifications').insert({
                         "auth_data": data.get("auth_data"),
                         "chat_instance": data.get("chat_instance"),
                         "chat_type": data.get("chat_type"),
