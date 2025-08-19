@@ -5,8 +5,16 @@ from supabase_client import supabase
 from datetime import datetime
 
 class handler(BaseHTTPRequestHandler):
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
+    
     def do_POST(self):
-        try:    
+        try:
+            origin = self.headers.get('Origin', '*')   
             content_length = int(self.headers['Content-Length'])
             post_data = parse_qs(self.rfile.read(content_length).decode('utf-8'))
             
@@ -54,6 +62,7 @@ class handler(BaseHTTPRequestHandler):
 
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             self.wfile.write(json.dumps({
                 "valid": is_valid,
@@ -63,5 +72,6 @@ class handler(BaseHTTPRequestHandler):
         except Exception as e:
             self.send_response(400)
             self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             self.wfile.write(json.dumps({"error": str(e)}).encode())
